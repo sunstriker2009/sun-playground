@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find, customize, and reuse developer snippets in Playground by Sun.">
+  <meta name="color-scheme" content="dark">
+  <title>Playground by Sun</title>
+  <link rel="stylesheet" href="./app/styles.css?v=regex-reference-1">
+  <script type="module">
+    const status = document.getElementById('workspace-status');
+    import('./app/workspace.mjs?v=linq-m8-1').then(
+      () => { status.hidden = true; },
+      (error) => {
+        status.textContent = 'The snippet catalog couldn’t load. Reload the page to try again.';
+        console.error(error);
+      },
+    );
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container brand">
+      <span>PLAYGROUND <small>by Sun</small></span>
+    </div>
+  </header>
+  <main id="workspace" class="container">
+    <section class="intro" aria-labelledby="page-title">
+      <h1>Snippet library</h1>
+      <p>Find a snippet, make it yours, and copy it into your workflow.</p>
+      <label for="search">Search snippets</label>
+      <input id="search" type="search" placeholder="Try “git history” or “filter array”" autocomplete="off">
+      <details id="search-filters" class="search-filters">
+        <summary>Filters</summary>
+        <details id="catalog-disclosure" class="catalog-navigation">
+          <summary>Catalogs</summary>
+          <nav id="catalog-menu" aria-label="Snippet catalog"></nav>
+        </details>
+        <details id="tag-filter" class="tag-filter">
+          <summary>Tags</summary>
+          <div id="tag-filter-options" class="tag-filter-options" role="group" aria-label="Filter by tags"></div>
+          <span id="no-tag-options" class="muted">No tags added yet.</span>
+        </details>
+        <div class="filter-options">
+          <label><input id="filter-saved" type="checkbox"> Saved</label>
+          <label><input id="filter-favorites" type="checkbox"> Favorites</label>
+        </div>
+      </details>
+      <ul id="active-filters" class="active-filters" aria-label="Active filters" hidden></ul>
+    </section>
+    <div class="layout">
+      <section aria-labelledby="browse-heading" class="browse">
+        <h2 id="browse-heading" tabindex="-1">All snippets</h2>
+        <p id="workspace-status" class="muted" role="status">Loading snippets…</p>
+        <section id="variant-tools" aria-label="Personal backups" hidden>
+          <div class="variant-transfer">
+            <button type="button" id="export-variants" aria-label="Export personal backup">Export</button>
+            <button type="button" id="import-variants" aria-label="Import personal backup">Import</button>
+            <button type="button" id="share-variants">Share</button>
+            <input type="file" id="variant-backup-file" accept=".json,application/json" hidden>
+          </div>
+          <p id="variant-transfer-status" class="muted" role="status"></p>
+        </section>
+        <p id="result-count" class="muted" role="status"></p>
+        <nav id="pagination" class="pagination" aria-label="Result pages" hidden>
+          <button type="button" id="previous-page" aria-label="Previous page">Previous</button>
+          <span id="page-number" role="status"></span>
+          <button type="button" id="next-page" aria-label="Next page">Next</button>
+        </nav>
+        <ul id="results" class="results"></ul>
+        <p id="no-results" class="muted" hidden>Try a different search term.</p>
+      </section>
+      <section id="detail" class="panel" aria-labelledby="snippet-title" hidden>
+        <button type="button" id="back-to-results">← Back to results</button>
+        <p id="snippet-language" class="language"></p>
+        <div class="detail-heading">
+          <h2 id="snippet-title" tabindex="-1"></h2>
+          <div class="snippet-actions">
+            <button type="button" id="favorite" aria-pressed="false"><span aria-hidden="true">☆</span> Favorite</button>
+            <button type="button" id="copy-link">Copy link</button>
+            <button type="button" id="open-full-screen" aria-haspopup="dialog">Full screen</button>
+          </div>
+        </div>
+        <p id="link-status" class="muted" role="status"></p>
+        <div id="link-fallback" hidden>
+          <label for="snippet-link">Snippet link</label>
+          <input id="snippet-link" type="url" readonly>
+        </div>
+        <p id="favorite-status" class="favorite-feedback" role="status" hidden></p>
+        <p id="snippet-description" class="muted"></p>
+        <section aria-labelledby="tags-heading" class="snippet-tags">
+          <div class="tag-heading">
+            <h3 id="tags-heading">Tags</h3>
+            <button type="button" id="toggle-tag-editor" aria-label="Add a tag" aria-controls="tag-editor" aria-expanded="false">+</button>
+          </div>
+          <ul id="snippet-tags" class="tag-list"></ul>
+          <form id="tag-editor" class="tag-editor" hidden>
+            <div>
+              <label for="tag-name">Tag name</label>
+              <input id="tag-name" autocomplete="off" required>
+            </div>
+            <button type="submit">Add tag</button>
+          </form>
+          <p id="tag-status" class="muted" role="status"></p>
+        </section>
+        <h3>Example</h3>
+        <p id="example-context" class="muted"></p>
+        <pre><code id="example"></code></pre>
+        <button type="button" id="jump-to-builder">Jump to builder</button>
+        <dl class="reference-details">
+          <dt>Prerequisites</dt>
+          <dd id="prerequisites"></dd>
+          <dt>Expected behavior</dt>
+          <dd id="expected"></dd>
+          <dt>Effects</dt>
+          <dd id="effects"></dd>
+        </dl>
+        <h3 id="builder-heading" tabindex="-1">Builder</h3>
+        <form id="builder">
+          <div id="fields" class="fields"></div>
+          <div class="output-heading">
+            <label for="output">Generated snippet</label>
+            <button id="copy" type="button">Copy code</button>
+          </div>
+          <textarea id="output" readonly rows="4" spellcheck="false"></textarea>
+          <p id="builder-status" class="status" role="status"></p>
+          <div class="save-row">
+            <div>
+              <label for="variant-name">Variant name</label>
+              <input id="variant-name" maxlength="80" required aria-describedby="variant-help"><small id="variant-help">Saving with the same name replaces that variant.</small>
+            </div>
+            <button id="save-variant" type="submit">Save variant</button>
+          </div>
+          <p id="variant-status" class="status" role="status"></p>
+        </form>
+        <section aria-labelledby="variants-heading" class="variants-section">
+          <h3 id="variants-heading">Saved</h3>
+          <p id="variants-empty" class="muted">Save a named variant to reuse these values in this browser.</p>
+          <ul id="variants" class="variants"></ul>
+        </section>
+        <section aria-labelledby="related-heading" class="related-section">
+          <h3 id="related-heading">Related snippets</h3>
+          <ul id="related"></ul>
+        </section>
+      </section>
+      <dialog id="snippet-full-screen" aria-labelledby="snippet-title">
+        <header class="full-screen-toolbar">
+          <form method="dialog" class="container">
+            <button type="submit" autofocus>Exit full screen</button>
+          </form>
+        </header>
+        <div id="full-screen-content" class="container"></div>
+      </dialog>
+      <p id="unknown-snippet" class="panel" hidden>This snippet could not be found. Choose one from the library.</p>
+    </div>
+    <noscript><p>Enable JavaScript to search snippets and use the builder.</p></noscript>
+  </main>
+</body>
+</html>
