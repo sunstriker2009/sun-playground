@@ -1,6 +1,8 @@
+<!-- SUN BRANDING START -->
 # Playground by Sun
 
 A searchable workspace for customizing and reusing Git, JavaScript, C#, and XPath snippets.
+<!-- SUN BRANDING END -->
 
 ## Snippet workspace
 
